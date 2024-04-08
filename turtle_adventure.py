@@ -4,7 +4,8 @@ adventure game.
 """
 from turtle import RawTurtle
 from gamelib import Game, GameElement
-import random
+import random, math
+
 
 class TurtleGameElement(GameElement):
     """
@@ -334,7 +335,11 @@ class FencingEnemy(Enemy):
     def __init__(self, game: "TurtleAdventureGame", size: int, color: str):
         super().__init__(game, size, color)
         self.speed = 1
-        self.direction = 0
+        self.current_step = 0
+        self.steps = [(self.game.home.x + 25, self.game.home.y),
+                      (self.game.home.x + 25, self.game.home.y + 25),
+                      (self.game.home.x, self.game.home.y + 25),
+                      (self.game.home.x, self.game.home.y)]
         self.__id = None
 
     def create(self) -> None:
@@ -342,13 +347,17 @@ class FencingEnemy(Enemy):
 
     def update(self) -> None:
         """
-        Update the position of the enemy in a square-like pattern around the home.
+        Update the position of the enemy in a square-like pattern outside the home.
         """
-        directions = [(self.speed, 0), (0, self.speed), (-self.speed, 0), (0, -self.speed)]
-        dx, dy = directions[self.direction]
-        self.x += dx
-        self.y += dy
-        self.direction = (self.direction + 1) % len(directions)
+        target_x, target_y = self.steps[self.current_step]
+        dx = target_x - self.x
+        dy = target_y - self.y
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+        if distance > self.speed:
+            self.x += dx / distance * self.speed
+            self.y += dy / distance * self.speed
+        else:
+            self.current_step = (self.current_step + 1) % len(self.steps)
         if self.hits_player():
             self.game.game_over_lose()
 
