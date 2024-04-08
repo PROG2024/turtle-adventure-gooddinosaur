@@ -4,7 +4,7 @@ adventure game.
 """
 from turtle import RawTurtle
 from gamelib import Game, GameElement
-
+import random
 
 class TurtleGameElement(GameElement):
     """
@@ -148,7 +148,7 @@ class Player(TurtleGameElement):
         turtle = RawTurtle(self.canvas)
         turtle.getscreen().tracer(False) # disable turtle's built-in animation
         turtle.shape("turtle")
-        turtle.color("green")
+        turtle.color("#FF3EA5")
         turtle.penup()
 
         self.__turtle = turtle
@@ -248,7 +248,7 @@ class Enemy(TurtleGameElement):
 # * Define enemy's update logic in the update() method
 # * Check whether the player hits this enemy, then call the
 #   self.game.game_over_lose() method in the TurtleAdventureGame class.
-class DemoEnemy(Enemy):
+class RandomWalkEnemy(Enemy):
     """
     Demo enemy
     """
@@ -258,27 +258,71 @@ class DemoEnemy(Enemy):
                  size: int,
                  color: str):
         super().__init__(game, size, color)
+        self.__id = None
+        self.speed = 5
 
     def create(self) -> None:
-        pass
+        self.__id = self.canvas.create_oval(0, 0, 0, 0, fill=self.color)
 
     def update(self) -> None:
-        pass
+        """
+        Update the position of the enemy randomly.
+        """
+        dx = random.randint(-self.speed, self.speed)
+        dy = random.randint(-self.speed, self.speed)
+        self.x += dx
+        self.y += dy
+        if self.hits_player():
+            self.game.game_over_lose()
 
     def render(self) -> None:
-        pass
+        self.canvas.coords(self.__id,
+                           self.x - self.size/2,
+                           self.y - self.size/2,
+                           self.x + self.size/2,
+                           self.y + self.size/2)
 
     def delete(self) -> None:
         pass
 
 
-# TODO
-# Complete the EnemyGenerator class by inserting code to generate enemies
-# based on the given game level; call TurtleAdventureGame's add_enemy() method
-# to add enemies to the game at certain points in time.
-#
-# Hint: the 'game' parameter is a tkinter's frame, so it's after()
-# method can be used to schedule some future events.
+class ChasingEnemy(Enemy):
+    """
+    Represents an enemy that tries to chase the player.
+    """
+
+    def __init__(self, game: "TurtleAdventureGame", size: int, color: str):
+        super().__init__(game, size, color)
+        self.speed = 3
+        self.__id = None
+
+    def create(self) -> None:
+        self.__id = self.canvas.create_oval(0, 0, 0, 0, fill=self.color)
+
+    def update(self) -> None:
+        """
+        Update the position of the enemy to chase the player.
+        """
+        dx = self.game.player.x - self.x
+        dy = self.game.player.y - self.y
+        distance = ((dx ** 2) + (dy ** 2)) ** 0.5
+        dx /= distance
+        dy /= distance
+        self.x += dx * self.speed
+        self.y += dy * self.speed
+        if self.hits_player():
+            self.game.game_over_lose()
+
+    def render(self) -> None:
+        self.canvas.coords(self.__id,
+                           self.x - self.size/2,
+                           self.y - self.size/2,
+                           self.x + self.size/2,
+                           self.y + self.size/2)
+
+    def delete(self) -> None:
+        pass
+
 
 class EnemyGenerator:
     """
@@ -311,11 +355,16 @@ class EnemyGenerator:
         """
         Create a new enemy, possibly based on the game level
         """
-        new_enemy = DemoEnemy(self.__game, 20, "red")
-        new_enemy.x = 100
-        new_enemy.y = 100
-        self.game.add_element(new_enemy)
+        # Random walk enemy
+        random_enemy = RandomWalkEnemy(self.__game, 20, "red")
+        random_enemy.x = 150
+        random_enemy.y = 150
+        self.game.add_element(random_enemy)
 
+        chasing_enemy = ChasingEnemy(self.__game, 20, "blue")
+        chasing_enemy.x = 500
+        chasing_enemy.y = 200
+        self.game.add_element(chasing_enemy)
 
 class TurtleAdventureGame(Game): # pylint: disable=too-many-ancestors
     """
