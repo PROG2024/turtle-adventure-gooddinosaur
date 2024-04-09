@@ -453,26 +453,26 @@ class EnemyGenerator:
         Create a new enemy, possibly based on the game level
         """
         # Random walk enemy
-        # for i in range(20):
-        #     random_enemy = RandomWalkEnemy(self.__game, 20, "red")
-        #     random_enemy.x = random.randint(100, self.__game.screen_width)
-        #     random_enemy.y = random.randint(0, self.__game.screen_height)
-        #     self.__game.add_element(random_enemy)
-        #
-        # # Chasing enemy
-        # start_y = 100
-        # for x in range(4):
-        #     chasing_enemy = ChasingEnemy(self.__game, 20, "blue")
-        #     chasing_enemy.x = 500
-        #     chasing_enemy.y = start_y
-        #     self.game.add_element(chasing_enemy)
-        #     start_y += 120
-        #
-        # # Fencing enemy
-        # fencing_enemy = FencingEnemy(self.__game, 20, "green")
-        # fencing_enemy.x = self.__game.home.x - 25
-        # fencing_enemy.y = self.__game.home.y - 25
-        # self.game.add_element(fencing_enemy)
+        for i in range(25):
+            random_enemy = RandomWalkEnemy(self.__game, 20, "red")
+            random_enemy.x = random.randint(100, self.__game.screen_width)
+            random_enemy.y = random.randint(0, self.__game.screen_height)
+            self.__game.add_element(random_enemy)
+
+        # Chasing enemy
+        start_y = 100
+        for x in range(4):
+            chasing_enemy = ChasingEnemy(self.__game, 20, "blue")
+            chasing_enemy.x = 500
+            chasing_enemy.y = start_y
+            self.game.add_element(chasing_enemy)
+            start_y += 120
+
+        # Fencing enemy
+        fencing_enemy = FencingEnemy(self.__game, 20, "green")
+        fencing_enemy.x = self.__game.home.x - 25
+        fencing_enemy.y = self.__game.home.y - 25
+        self.game.add_element(fencing_enemy)
 
         # Speed up bouncing enemy
         start_x = 300
