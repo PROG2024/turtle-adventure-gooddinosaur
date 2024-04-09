@@ -334,10 +334,10 @@ class FencingEnemy(Enemy):
 
     def __init__(self, game: "TurtleAdventureGame", size: int, color: str):
         super().__init__(game, size, color)
-        self.speed = 1
-        self.current_step = 0
-        self.steps = [(50, 0), (0, 50), (-50, 0), (0, -50)]
+        self.speed = 2
+        self.steps = 0
         self.__id = None
+        self.next_direction = "right"
 
     def create(self) -> None:
         self.__id = self.canvas.create_oval(0, 0, 0, 0, fill=self.color)
@@ -346,12 +346,30 @@ class FencingEnemy(Enemy):
         """
         Update the position of the enemy in a square-like pattern outside the home.
         """
-        if self.current_step == 4:
-            self.current_step = 0
-        step = self.steps[self.current_step]
-        self.x += step[0]
-        self.y += step[1]
-        self.current_step += 1
+        if self.next_direction == "right":
+            self.x += self.speed
+            self.steps += 1
+            if self.steps >= 25:
+                self.next_direction = "down"
+                self.steps = 0
+        elif self.next_direction == "down":
+            self.y += self.speed
+            self.steps += 1
+            if self.steps >= 25:
+                self.next_direction = "left"
+                self.steps = 0
+        elif self.next_direction == "left":
+            self.x -= self.speed
+            self.steps += 1
+            if self.steps >= 25:
+                self.next_direction = "up"
+                self.steps = 0
+        elif self.next_direction == "up":
+            self.y -= self.speed
+            self.steps += 1
+            if self.steps >= 25:
+                self.next_direction = "right"
+                self.steps = 0
         if self.hits_player():
             self.game.game_over_lose()
 
@@ -364,6 +382,10 @@ class FencingEnemy(Enemy):
 
     def delete(self) -> None:
         pass
+
+
+class BouncingEnemy(Enemy):
+    pass
 
 
 class EnemyGenerator:
@@ -415,7 +437,7 @@ class EnemyGenerator:
 
         # Fencing enemy
         fencing_enemy = FencingEnemy(self.__game, 20, "green")
-        fencing_enemy.x = self.__game.home.x -25
+        fencing_enemy.x = self.__game.home.x - 25
         fencing_enemy.y = self.__game.home.y - 25
         self.game.add_element(fencing_enemy)
 
