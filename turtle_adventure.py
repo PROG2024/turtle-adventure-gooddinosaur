@@ -2,9 +2,10 @@
 The turtle_adventure module maintains all classes related to the Turtle's
 adventure game.
 """
+import random
 from turtle import RawTurtle
 from gamelib import Game, GameElement
-import random, math
+
 
 
 class TurtleGameElement(GameElement):
@@ -385,6 +386,8 @@ class FencingEnemy(Enemy):
 
 
 class BouncingSpeedUpEnemy(Enemy):
+    """This is my custom enemy. This enemy will bounce in y-axis and speed up
+    each bounce."""
     def __init__(self, game: "TurtleAdventureGame", size: int, color: str):
         super().__init__(game, size, color)
         self.speed = 5
