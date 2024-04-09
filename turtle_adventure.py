@@ -387,9 +387,9 @@ class FencingEnemy(Enemy):
 class BouncingSpeedUpEnemy(Enemy):
     def __init__(self, game: "TurtleAdventureGame", size: int, color: str):
         super().__init__(game, size, color)
-        self.speed = 4
+        self.speed = 5
         self.__id = None
-        self.max_speed = 8
+        self.max_speed = 12
 
     def create(self) -> None:
         self.__id = self.canvas.create_oval(0, 0, 0, 0, fill=self.color)
@@ -400,6 +400,12 @@ class BouncingSpeedUpEnemy(Enemy):
         """
         self.y += self.speed
         if self.y - self.size / 2 <= 0 or self.y + self.size / 2 >= self.game.screen_height:
+            if abs(self.speed) < self.max_speed:
+                if self.speed < 0:
+                    self.speed = abs(self.speed) + 1
+                    self.speed *= -1
+                else:
+                    self.speed = abs(self.speed) + 1
             self.speed *= -1
         if self.hits_player():
             self.game.game_over_lose()
